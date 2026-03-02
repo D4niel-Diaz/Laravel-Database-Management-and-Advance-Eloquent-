@@ -12,9 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-             $table->string('full_name');
+            // Add full_name column if it doesn't exist
+            if (!Schema::hasColumn('users', 'full_name')) {
+                $table->string('full_name')->after('id');
+            }
 
-            $table->dropColumn(['first_name', 'last_name']);
+            // Safely drop first_name and last_name if they exist
+            if (Schema::hasColumn('users', 'first_name')) {
+                $table->dropColumn('first_name');
+            }
+            if (Schema::hasColumn('users', 'last_name')) {
+                $table->dropColumn('last_name');
+            }
         });
     }
 
@@ -24,10 +33,18 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('first_name');
-            $table->string('last_name');
+            // Recreate first_name and last_name if they don't exist
+            if (!Schema::hasColumn('users', 'first_name')) {
+                $table->string('first_name')->after('id');
+            }
+            if (!Schema::hasColumn('users', 'last_name')) {
+                $table->string('last_name')->after('first_name');
+            }
 
-            $table->dropColumn('full_name');
+            // Drop full_name if it exists
+            if (Schema::hasColumn('users', 'full_name')) {
+                $table->dropColumn('full_name');
+            }
         });
     }
 };
