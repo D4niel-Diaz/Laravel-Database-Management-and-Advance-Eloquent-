@@ -19,8 +19,10 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'first_name',
+        'last_name',
         'name',
-        'full_name',  
+        'full_name',
         'email',
         'password',
         'email_verified_at',
@@ -86,8 +88,8 @@ class User extends Authenticatable
 
     public function scopeActiveSince($query, $date)
     {
-        return $query->whereNotNull('email_verified_at')
-                    ->where('created_at', '>=', $date);
+            return $query->where('status', 'active')
+                 ->where('created_at', '>=', $date);
     }
 
     
